@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import CoinInfo from "./components/CoinInfo";
+import CoinList from "./components/CoinList";
 
 import "./App.css";
 const API_KEY = import.meta.env.VITE_APP_API_KEY;
@@ -47,30 +48,8 @@ function App() {
           placeholder="Search..."
           onChange={(inputString) => searchItems(inputString.target.value)}
         />
-        <ul>
-          {searchInput.length > 0
-            ? // what happens if we have search input? what list do we use to display coins?
-              // perform search items
-              // get the filtered results from the state and map through them
-              filteredResults && filteredResults.map((coin) => (
-                <CoinInfo
-                  image={list.Data[coin].ImageUrl}
-                  name={list.Data[coin].FullName}
-                  symbol={list.Data[coin].Symbol}
-                />
-              ))
-            : // what happens if we don't have search input? what list do we use to display coins?
-              list &&
-              Object.entries(list.Data).map(([coin]) =>
-                list.Data[coin].PlatformType === "blockchain" ? (
-                  <CoinInfo
-                    image={list.Data[coin].ImageUrl}
-                    name={list.Data[coin].FullName}
-                    symbol={list.Data[coin].Symbol}
-                  />
-                ) : null
-              )}
-        </ul>
+        <CoinList list={list} searchInput={searchInput} filteredResults={filteredResults} />
+
       </div>
     </>
   );
