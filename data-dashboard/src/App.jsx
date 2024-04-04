@@ -29,7 +29,8 @@ export default function App() {
   useEffect(() => {
     async function fetchData() {
       // call API
-      const urlSlug = searchString.replace(" ", "+")
+      const urlSlug = searchString.replaceAll(" ", "+")
+      console.log(URL + "title=" + urlSlug)
       try {
         const response = await axios.get(URL + "title=" + urlSlug);
         setBooks(response.data);
