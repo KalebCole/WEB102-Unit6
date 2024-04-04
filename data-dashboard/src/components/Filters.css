@@ -1,0 +1,35 @@
+/* The switch - the box around the slider */
+.toggle-btn {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    border-radius: 99px;
+  }
+  
+  /* The slider */
+  .toggle-btn:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+  }
+  
+  /* The "ON" color */
+  .toggled {
+    background-color: #2196F3;
+  }
+  
+  /* Move the slider to the right when toggled */
+  .toggled:before {
+    transform: translateX(26px);
+  }
+  
+  /* The "OFF" color */
+  .toggle-btn:not(.toggled) {
+    background-color: #ccc;
+  }

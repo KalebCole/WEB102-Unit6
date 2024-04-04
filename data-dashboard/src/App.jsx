@@ -17,12 +17,13 @@ export default function App() {
   const[filters, setFilters] = useState(
     {
       "rating" : null,
-      "subjects" : [],
+      "subjects" : ["Fiction"],
       "availableOnAudio": false,
-      "languages": []
+      "languages": ["eng", "spa"]
     }
   )
-  console.log(filters.rating)
+  // console.log(filters.subject)
+  // console.log(filters.language)
 
   const URL = "https://openlibrary.org/search.json?"
   useEffect(() => {
@@ -76,7 +77,7 @@ export default function App() {
       <Heading/>
       <SearchBar searchString = {searchString} setSearchString={setSearchString}/>
       <Filters rating = {filters.rating} subjects = {filters.subjects} availableOnAudio = {filters.availableOnAudio} languages = {filters.languages} setFilters = {setFilters}/>
-      {/* <StatChart books={books}/> */}
+      <StatChart books={books}/>
       {books && books.docs && books.docs.length > 0 && <BookList books = {books}/> }
     </>
   );
