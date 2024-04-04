@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import {
   BarChart,
@@ -11,29 +10,29 @@ import {
 } from "recharts";
 
 export default function StatChart({ books }) {
-  const [languageFrequencies, setLanguageFrequencies] = useState([]); // used for getting all the languages in the books list and showing in the chart
-  // this will show a chart from recharts showcasing a bar chart for the languages of the filtered books
+  const [languageFrequencies, setLanguageFrequencies] = useState([]);
 
   useEffect(() => {
-    if (!books || !books.docs) {
+    // Directly check if books is an array and has length
+    if (!Array.isArray(books) || books.length === 0) {
       return;
     }
     const frequencies = {};
-    books.docs.forEach((book) => {
-      const languages = book.language;
-      if(languages){
-          languages.forEach((language) => {
-            if (frequencies[language]) {
-              frequencies[language].count += 1;
-            } else {
-              frequencies[language] = { language, count: 1 };
-            }
-          });
-      } 
+    books.forEach((book) => {
+      // Assuming languages is an array. Adjust if your data structure is different.
+      const { languages } = book;
+      if (languages) {
+        languages.forEach((language) => {
+          if (frequencies[language]) {
+            frequencies[language].count += 1;
+          } else {
+            frequencies[language] = { language, count: 1 };
+          }
+        });
+      }
     });
     setLanguageFrequencies(Object.values(frequencies));
   }, [books]);
-  console.log(languageFrequencies);
 
   return (
     <BarChart width={500} height={300} data={languageFrequencies}>

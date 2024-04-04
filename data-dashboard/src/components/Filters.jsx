@@ -1,5 +1,6 @@
-import {useState} from 'react'
-import "./Filters.css"
+/* eslint-disable react/prop-types */
+import React from 'react';
+import './Filters.css';
 
 export default function Filters({
   rating,
@@ -8,54 +9,114 @@ export default function Filters({
   languages,
   setFilters,
 }) {
+  // Function to handle adding or removing a subject from the filters
+  const toggleSubject = (subject) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      subjects: prevFilters.subjects.includes(subject)
+        ? prevFilters.subjects.filter((s) => s !== subject) // Remove subject
+        : [...prevFilters.subjects, subject], // Add subject
+    }));
+  };
 
-  const [toggled, setToggled] = useState(false);
+  // Function to handle adding or removing a language from the filters
+  const toggleLanguage = (language) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      languages: prevFilters.languages.includes(language)
+        ? prevFilters.languages.filter((l) => l !== language) // Remove language
+        : [...prevFilters.languages, language], // Add language
+    }));
+  };
+
+  // Function to clear a specific filter
+  const clearFilter = (filterName) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [filterName]: filterName === 'subjects' || filterName === 'languages' ? [] : null,
+    }));
+  };
+
   return (
     <div className="container">
-      {/* rating section */}
+      {/* Rating section */}
       <div className="rating-section">
-        {/* when the rating is not null, display a clear button */}
         <ul>
-          {[1, 2, 3, 4, 5].map((rating) => (
+          {[1, 2, 3, 4, 5].map((r) => (
             <li
-            key={rating}
-            onClick={() =>
-              setFilters((prevFilters) => ({ ...prevFilters, rating }))
-            }
+              key={r}
+              className={`rating-item ${rating === r ? 'selected' : ''}`}
+              onClick={() =>
+                setFilters((prevFilters) => ({ ...prevFilters, rating: r }))
+              }
             >
-              {rating}
+              {r} Stars
             </li>
           ))}
         </ul>
+        {rating && (
+          <button className="clear-btn" onClick={() => clearFilter('rating')}>
+            Clear Rating
+          </button>
+        )}
       </div>
 
-      {/* subjects section */}
+      {/* Subjects section */}
       <div className="subjects-section">
-          {/* when the subject is not null, display a clear button */}
-          <ul>
-            {subjects.map((subject) => (
-              <li key={subject} onClick={() => setFilters((prevFilters) => ({ ...prevFilters, subject }))}>
-                {subject}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-      {/* availableOnAudio Section */}
-      <div className="audio-section">
-        {/* toggle switch for the audio content */}
-        <button className={`toggle-btn ${toggled ? "toggled"  : null}`} onClick={() => setToggled(!toggled)}></button>
+        <ul>
+          {subjects.map((subject) => (
+            <li
+              key={subject}
+              className={`subject-item ${subjects.includes(subject) ? 'selected' : ''}`}
+              onClick={() => toggleSubject(subject)}
+            >
+              {subject}
+            </li>
+          ))}
+        </ul>
+        {subjects.length > 0 && (
+          <button className="clear-btn" onClick={() => clearFilter('subjects')}>
+            Clear Subjects
+          </button>
+        )}
       </div>
 
+      {/* AvailableOnAudio Section */}
+      <div className="audio-section">
+        <label className="toggle-label">
+          Available on Audio
+          <input
+            type="checkbox"
+            checked={availableOnAudio}
+            onChange={() =>
+              setFilters((prevFilters) => ({
+                ...prevFilters,
+                availableOnAudio: !prevFilters.availableOnAudio,
+              }))
+            }
+          />
+          <span className="toggle-btn"></span>
+        </label>
+      </div>
+
+      {/* Languages section */}
       <div className="languages-section">
         <ul>
           {languages.map((language) => (
-            <li key={language} onClick={() => setFilters((prevFilters) => ({ ...prevFilters, language }))}>
+            <li
+              key={language}
+              className={`language-item ${languages.includes(language) ? 'selected' : ''}`}
+              onClick={() => toggleLanguage(language)}
+            >
               {language}
             </li>
           ))}
         </ul>
-        {/* check box for the languages available */}
+        {languages.length > 0 && (
+          <button className="clear-btn" onClick={() => clearFilter('languages')}>
+            Clear Languages
+          </button>
+        )}
       </div>
     </div>
   );
