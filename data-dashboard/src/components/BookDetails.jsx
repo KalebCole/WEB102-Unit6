@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import placeholderImage from '../assets/book-cover-placeholder.gif';
+import "./BookDetails.css"
 
 const URL = "https://openlibrary.org/works/";
 
@@ -25,7 +27,7 @@ const BookDetails = () => {
                     const newBook = {
                         title: title,
                         description: description?.value || description || "No description found",
-                        cover_img: covers && covers.length > 0 ? `https://covers.openlibrary.org/b/id/${covers[0]}-L.jpg` : null,
+                        cover_img: covers && covers.length > 0 ? `https://covers.openlibrary.org/b/id/${covers[0]}-L.jpg` : placeholderImage,
                         subject_places: subject_places?.join(", ") || "No subject places found",
                         subject_times: subject_times?.join(", ") || "No subject times found",
                         subjects: subjects?.join(", ") || "No subjects found"
@@ -43,16 +45,21 @@ const BookDetails = () => {
     if (!book) return <div>Loading...</div>; // Display loading or handle null state
 
     return (
-        <div>
-            <h2>{book.title}</h2>
-            {book.cover_img && <img src={book.cover_img} alt={book.title} />}
-            <p>Description: {book.description}</p>
-            <p>Subject Places: {book.subject_places}</p>
-            <p>Subjects: {book.subjects}</p>
-            {/* Optionally display subject times if you have that data */}
-            <p>Subject Times: {book.subject_times}</p>
+        <div className="book-details">
+            <div className="book-cover" style={{ backgroundImage: `url(${book.cover_img})` }}>
+                <div className="overlay">
+                    <h1 className="book-title">{book.title}</h1>
+                    <p className="book-tagline">{/* Some catchy tagline or quote here */}</p>
+                </div>
+            </div>
+            <div className="book-content">
+                <p>Description: {book.description}</p>
+                <p>Subject Places: {book.subject_places}</p>
+                <p>Subjects: {book.subjects}</p>
+                <p>Subject Times: {book.subject_times}</p>
+            </div>
         </div>
     );
-}
+};
 
 export default BookDetails;

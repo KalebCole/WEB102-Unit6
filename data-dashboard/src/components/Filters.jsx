@@ -1,56 +1,52 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from "react";
 import "./Filters.css";
-import StarRatings from 'react-star-ratings';
+import StarRatings from "react-star-ratings";
 
 export default function Filters({
   rating,
   subjects,
   availableOnAudio,
-  languages,
   setFilters,
   books,
 }) {
   // onLoad, populate a list of 15 subjects from the first 2 subjects in the books subject array and add this to the subjects filter
   const [bookSubjects, setBookSubjects] = useState([]);
   const populateSubjects = () => {
-    if (!books || books.length === 0) {
-      setBookSubjects([]);
-      return;
-    }
-  
-    const newBookSubjects = [];
-    books.forEach((book) => {
-      if (book.subjects && Array.isArray(book.subjects)) {
-        for (let i = 0; i < book.subjects.length && i < 2; i++) {
-          newBookSubjects.push(book.subjects[i]);
-        }
-      }
-    });
-  
-    // Deduplicate subjects
-    const uniqueSubjects = Array.from(new Set(newBookSubjects));
-  
+    const commonBookSubjects = [
+      "Fiction",
+      "Non-Fiction",
+      "Science Fiction & Fantasy",
+      "Biographies & Memoirs",
+      "Children's Books",
+      "Self-Help",
+      "History",
+      "Business & Economics",
+      "Science & Technology",
+      "Health & Fitness",
+    ];
     // Limit to 15 subjects
-    setBookSubjects(uniqueSubjects.slice(0, 15));
+    setBookSubjects(commonBookSubjects);
   };
-  
 
   useEffect(() => {
     populateSubjects();
   }, [books]);
-  
- // Toggle subject selection
- const handleSubjectChange = (subject) => {
-  setFilters(prevFilters => {
-    const isSubjectSelected = prevFilters.subjects.includes(subject);
-    if (isSubjectSelected) {
-      return { ...prevFilters, subjects: prevFilters.subjects.filter(s => s !== subject) };
-    } else {
-      return { ...prevFilters, subjects: [...prevFilters.subjects, subject] };
-    }
-  });
-};
+
+  // Toggle subject selection
+  const handleSubjectChange = (subject) => {
+    setFilters((prevFilters) => {
+      const isSubjectSelected = prevFilters.subjects.includes(subject);
+      if (isSubjectSelected) {
+        return {
+          ...prevFilters,
+          subjects: prevFilters.subjects.filter((s) => s !== subject),
+        };
+      } else {
+        return { ...prevFilters, subjects: [...prevFilters.subjects, subject] };
+      }
+    });
+  };
 
   // This function updates the filters state with the new rating
   const changeRating = (newRating) => {
@@ -59,22 +55,11 @@ export default function Filters({
       rating: newRating,
     }));
   };
-  // Function to handle adding or removing a language from the filters
-  const toggleLanguage = (language) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      languages: prevFilters.languages.includes(language)
-        ? prevFilters.languages.filter((l) => l !== language) // Remove language
-        : [...prevFilters.languages, language], // Add language
-    }));
-  };
-
   // Function to clear a specific filter
   const clearFilter = (filterName) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
-      [filterName]:
-        filterName === "subjects" || filterName === "languages" ? [] : null,
+      [filterName]: filterName === "subjects" ? [] : null,
     }));
   };
   return (
@@ -107,7 +92,7 @@ export default function Filters({
           starHoverColor="gold"
           changeRating={changeRating}
           numberOfStars={5}
-          name='rating'
+          name="rating"
         />
         {rating > 0 && (
           <button className="clear-btn" onClick={() => changeRating(0)}>
@@ -122,36 +107,14 @@ export default function Filters({
           <input
             type="checkbox"
             checked={availableOnAudio}
-            onChange={() => setFilters((prevFilters) => ({
-              ...prevFilters,
-              availableOnAudio: !prevFilters.availableOnAudio,
-            }))}
+            onChange={() =>
+              setFilters((prevFilters) => ({
+                ...prevFilters,
+                availableOnAudio: !prevFilters.availableOnAudio,
+              }))
+            }
           />
-          Available on Audio
         </label>
-      </div>
-
-      <div className="filter-group languages-filter">
-        <h4>Languages</h4>
-        {languages.map((language) => (
-          <div key={language} className="checkbox-container">
-            <input
-              id={`language-${language}`}
-              type="checkbox"
-              checked={languages.includes(language)}
-              onChange={() => toggleLanguage(language)}
-            />
-            <label htmlFor={`language-${language}`}>{language}</label>
-          </div>
-        ))}
-        {languages.length > 0 && (
-          <button
-            className="clear-btn"
-            onClick={() => clearFilter("languages")}
-          >
-            Clear Languages
-          </button>
-        )}
       </div>
     </div>
   );

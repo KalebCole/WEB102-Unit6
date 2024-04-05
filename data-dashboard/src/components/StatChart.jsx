@@ -12,26 +12,28 @@ import {
 
 export default function StatChart({ books }) {
   const [languageFrequencies, setLanguageFrequencies] = useState([]);
-
+  console.log(books)
   useEffect(() => {
     // Directly check if books is an array and has length
     if (!Array.isArray(books) || books.length === 0) {
-      return;
+      setLanguageFrequencies([])
     }
-    const frequencies = {};
-    books.forEach((book) => {
-      const { languages } = book;
-      if (languages) {
-        languages.forEach((language) => {
-          if (frequencies[language]) {
-            frequencies[language].count += 1;
-          } else {
-            frequencies[language] = { language, count: 1 };
-          }
-        });
-      }
-    });
-    setLanguageFrequencies(Object.values(frequencies));
+    else{
+      const frequencies = {};
+      books.forEach((book) => {
+        const { languages } = book;
+        if (languages) {
+          languages.forEach((language) => {
+            if (frequencies[language]) {
+              frequencies[language].count += 1;
+            } else {
+              frequencies[language] = { language, count: 1 };
+            }
+          });
+        }
+      });
+      setLanguageFrequencies(Object.values(frequencies));
+    }
   }, [books]);
 
   return (

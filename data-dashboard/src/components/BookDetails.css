@@ -1,0 +1,59 @@
+/* BookDetails.css */
+.book-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center-align items */
+    text-align: center;
+    gap: 20px; /* Add some space between image and content */
+}
+
+.book-cover {
+    width: 100%;
+    height: 50vh; /* Adjust height as needed */
+    background-size: contain; /* Makes sure the image is fully visible without distortion */
+    background-position: center; /* Centers the image */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+}
+
+/* Adjust the .overlay if you're using it over the image for better readability */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5); /* Dark overlay for text readability */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff; /* Ensure text color is readable over dark background */
+}
+
+.book-title {
+    font-size: 2.5em;
+}
+
+.book-tagline {
+    font-style: italic;
+    color: #ddd;
+}
+
+.book-content {
+    width: 80%; /* Adjust based on your design preference */
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    position: relative; /* If you want to pull it up over the image */
+    top: -50px; /* Adjust the overlap */
+    z-index: 1; /* Ensure content is above the background image */
+}
+
+@media (max-width: 768px) {
+    .book-cover {
+        height: 40vh; /* Adjust height for smaller devices */
+    }
+
+    .book-content {
+        width: 90%; /* More width for smaller screens */
+    }
+}

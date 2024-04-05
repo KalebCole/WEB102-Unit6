@@ -9,7 +9,7 @@ import StatChart from "./components/StatChart";
 import BookList from "./components/BookList";
 import { Routes, Route } from "react-router-dom";
 import BookDetails from "./components/BookDetails";
-import Fuse from 'fuse.js'; // Make sure to install fuse.js or similar library
+import Fuse from "fuse.js"; // Make sure to install fuse.js or similar library
 
 function About() {
   return <h1>About</h1>;
@@ -17,13 +17,14 @@ function About() {
 
 export default function App() {
   const [books, setBooks] = useState([]);
-  const [searchString, setSearchString] = useState("lord of the rings");
+  const [searchString, setSearchString] = useState("");
   const [filters, setFilters] = useState({
     rating: 0,
     subjects: [],
     availableOnAudio: false,
-    languages: [],
   });
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const URL = "https://openlibrary.org/search.json?";
   useEffect(() => {
@@ -31,10 +32,11 @@ export default function App() {
       // call API
       if (searchString.length === 0) {
         setBooks([]);
+        setIsLoading(false);
         return;
       }
+      setIsLoading(true);
       const urlSlug = searchString.replaceAll(" ", "+");
-      // console.log(URL + "title=" + urlSlug);
       try {
         const response = await axios.get(URL + "title=" + urlSlug);
         const { docs } = response.data;
@@ -54,7 +56,7 @@ export default function App() {
               title,
             } = book;
             let audioAvailability = ebook_count_i > 0 ? true : false;
-            
+
             return {
               id: key,
               author: author_name,
@@ -75,32 +77,27 @@ export default function App() {
       } catch (error) {
         console.log("no data");
       }
+      setIsLoading(false);
     }
     fetchData();
   }, [searchString]);
 
-  
-  // Add a simple fuzzy match function for subjects
-  const fuzzyMatch = (bookSubjects, filterSubjects) => {
-    return (
-      filterSubjects.length === 0 ||
-      bookSubjects.some((subject) =>
-        filterSubjects.some((filterSubject) =>
-          subject.toLowerCase().startsWith(filterSubject.toLowerCase())
-        )
-      )
-    );
-  };
+  // console.log(filters.subjects)
+
   const filteredBooks = useMemo(() => {
-    return books.filter(book => {
+    return books.filter((book) => {
       const matchesRating = filters.rating ? book.rating >= filters.rating : true;
-      const matchesSubjects = fuzzyMatch(book.subjects || [], filters.subjects);
-      const matchesAudioAvailability = !filters.availableOnAudio || (book.isAvailableOnAudio === filters.availableOnAudio);
-      const matchesLanguages = filters.languages.length === 0 || (book.languages || []).some(lang => filters.languages.includes(lang));
-      return matchesRating && matchesSubjects && matchesAudioAvailability && matchesLanguages;
+      
+      // Filter subjects
+      const matchesSubjects = filters.subjects.length > 0 
+        ? book.subjects && filters.subjects.every(subject => book.subjects.includes(subject))
+        : true;
+  
+      const matchesAudioAvailability = !filters.availableOnAudio || book.isAvailableOnAudio === filters.availableOnAudio;
+  
+      return matchesRating && matchesSubjects && matchesAudioAvailability;
     });
   }, [books, filters]);
-  
   
   return (
     <>
@@ -119,7 +116,6 @@ export default function App() {
                 rating={filters.rating}
                 subjects={filters.subjects}
                 availableOnAudio={filters.availableOnAudio}
-                languages={filters.languages}
                 setFilters={setFilters}
                 books={filteredBooks}
               />

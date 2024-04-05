@@ -2,6 +2,7 @@
 .search-bar {
     position: relative;
     font-size: 1.2em; /* Bigger text */
+    
   }
   
   .search-bar input {
@@ -9,7 +10,7 @@
     padding: 10px 40px; /* Space for the icon */
     font-size: 1em; /* Relative to the parent font-size */
     border: 2px solid #ddd;
-    border-radius: 5px;
+    border-radius: 50px;
   }
   
   .search-bar input::placeholder {
