@@ -1,0 +1,26 @@
+/* SearchBar.css */
+.search-bar {
+    position: relative;
+    font-size: 1.2em; /* Bigger text */
+  }
+  
+  .search-bar input {
+    width: 100%; /* Full width */
+    padding: 10px 40px; /* Space for the icon */
+    font-size: 1em; /* Relative to the parent font-size */
+    border: 2px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .search-bar input::placeholder {
+    opacity: 0.7; /* Slightly transparent placeholder */
+  }
+  
+  .search-bar svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2em; /* Relative to the parent font-size */
+  }
+  

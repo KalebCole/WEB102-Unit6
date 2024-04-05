@@ -7,6 +7,7 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  ResponsiveContainer
 } from "recharts";
 
 export default function StatChart({ books }) {
@@ -19,7 +20,6 @@ export default function StatChart({ books }) {
     }
     const frequencies = {};
     books.forEach((book) => {
-      // Assuming languages is an array. Adjust if your data structure is different.
       const { languages } = book;
       if (languages) {
         languages.forEach((language) => {
@@ -35,13 +35,15 @@ export default function StatChart({ books }) {
   }, [books]);
 
   return (
-    <BarChart width={500} height={300} data={languageFrequencies}>
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="language" />
-      <YAxis />
-      <Tooltip />
-      <Legend />
-      <Bar dataKey="count" fill="#82ca9d" />
-    </BarChart>
+    <ResponsiveContainer width="100%" height={300}>
+      <BarChart data={languageFrequencies}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="language" label={{ value: "Language", position: "insideBottom", offset: -5 }} />
+        <YAxis label={{ value: "# of Books", angle: -90, position: 'insideLeft' }} />
+        <Tooltip />
+        <Legend />
+        <Bar dataKey="count" fill="#82ca9d" />
+      </BarChart>
+    </ResponsiveContainer>
   );
 }

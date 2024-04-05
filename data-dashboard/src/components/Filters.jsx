@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
-import './Filters.css';
+import React, { useEffect, useState } from "react";
+import "./Filters.css";
+import StarRatings from 'react-star-ratings';
 
 export default function Filters({
   rating,
@@ -8,17 +9,56 @@ export default function Filters({
   availableOnAudio,
   languages,
   setFilters,
+  books,
 }) {
-  // Function to handle adding or removing a subject from the filters
-  const toggleSubject = (subject) => {
+  // onLoad, populate a list of 15 subjects from the first 2 subjects in the books subject array and add this to the subjects filter
+  const [bookSubjects, setBookSubjects] = useState([]);
+  const populateSubjects = () => {
+    if (!books || books.length === 0) {
+      setBookSubjects([]);
+      return;
+    }
+  
+    const newBookSubjects = [];
+    books.forEach((book) => {
+      if (book.subjects && Array.isArray(book.subjects)) {
+        for (let i = 0; i < book.subjects.length && i < 2; i++) {
+          newBookSubjects.push(book.subjects[i]);
+        }
+      }
+    });
+  
+    // Deduplicate subjects
+    const uniqueSubjects = Array.from(new Set(newBookSubjects));
+  
+    // Limit to 15 subjects
+    setBookSubjects(uniqueSubjects.slice(0, 15));
+  };
+  
+
+  useEffect(() => {
+    populateSubjects();
+  }, [books]);
+  
+ // Toggle subject selection
+ const handleSubjectChange = (subject) => {
+  setFilters(prevFilters => {
+    const isSubjectSelected = prevFilters.subjects.includes(subject);
+    if (isSubjectSelected) {
+      return { ...prevFilters, subjects: prevFilters.subjects.filter(s => s !== subject) };
+    } else {
+      return { ...prevFilters, subjects: [...prevFilters.subjects, subject] };
+    }
+  });
+};
+
+  // This function updates the filters state with the new rating
+  const changeRating = (newRating) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
-      subjects: prevFilters.subjects.includes(subject)
-        ? prevFilters.subjects.filter((s) => s !== subject) // Remove subject
-        : [...prevFilters.subjects, subject], // Add subject
+      rating: newRating,
     }));
   };
-
   // Function to handle adding or removing a language from the filters
   const toggleLanguage = (language) => {
     setFilters((prevFilters) => ({
@@ -33,87 +73,82 @@ export default function Filters({
   const clearFilter = (filterName) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
-      [filterName]: filterName === 'subjects' || filterName === 'languages' ? [] : null,
+      [filterName]:
+        filterName === "subjects" || filterName === "languages" ? [] : null,
     }));
   };
-
   return (
-    <div className="container">
-      {/* Rating section */}
-      <div className="rating-section">
-        <ul>
-          {[1, 2, 3, 4, 5].map((r) => (
-            <li
-              key={r}
-              className={`rating-item ${rating === r ? 'selected' : ''}`}
-              onClick={() =>
-                setFilters((prevFilters) => ({ ...prevFilters, rating: r }))
-              }
-            >
-              {r} Stars
-            </li>
-          ))}
-        </ul>
-        {rating && (
-          <button className="clear-btn" onClick={() => clearFilter('rating')}>
-            Clear Rating
-          </button>
-        )}
-      </div>
-
-      {/* Subjects section */}
-      <div className="subjects-section">
-        <ul>
-          {subjects.map((subject) => (
-            <li
-              key={subject}
-              className={`subject-item ${subjects.includes(subject) ? 'selected' : ''}`}
-              onClick={() => toggleSubject(subject)}
-            >
-              {subject}
-            </li>
-          ))}
-        </ul>
-        {subjects.length > 0 && (
-          <button className="clear-btn" onClick={() => clearFilter('subjects')}>
+    <div className="filters-container">
+      <div className="filter-group subjects-filter">
+        <h4>Subjects</h4>
+        {bookSubjects.map((subject) => (
+          <div key={subject} className="checkbox-container">
+            <input
+              id={`subject-${subject}`}
+              type="checkbox"
+              checked={subjects.includes(subject)}
+              onChange={() => handleSubjectChange(subject)}
+            />
+            <label htmlFor={`subject-${subject}`}>{subject}</label>
+          </div>
+        ))}
+        {bookSubjects.length > 0 && (
+          <button className="clear-btn" onClick={() => clearFilter("subjects")}>
             Clear Subjects
           </button>
         )}
       </div>
 
-      {/* AvailableOnAudio Section */}
-      <div className="audio-section">
+      <div className="filter-group rating-filter">
+        <h4>Rating</h4>
+        <StarRatings
+          rating={rating}
+          starRatedColor="gold"
+          starHoverColor="gold"
+          changeRating={changeRating}
+          numberOfStars={5}
+          name='rating'
+        />
+        {rating > 0 && (
+          <button className="clear-btn" onClick={() => changeRating(0)}>
+            Clear Rating
+          </button>
+        )}
+      </div>
+
+      <div className="filter-group audio-filter">
+        <h4>Available on Audio</h4>
         <label className="toggle-label">
-          Available on Audio
           <input
             type="checkbox"
             checked={availableOnAudio}
-            onChange={() =>
-              setFilters((prevFilters) => ({
-                ...prevFilters,
-                availableOnAudio: !prevFilters.availableOnAudio,
-              }))
-            }
+            onChange={() => setFilters((prevFilters) => ({
+              ...prevFilters,
+              availableOnAudio: !prevFilters.availableOnAudio,
+            }))}
           />
-          <span className="toggle-btn"></span>
+          Available on Audio
         </label>
       </div>
 
-      {/* Languages section */}
-      <div className="languages-section">
-        <ul>
-          {languages.map((language) => (
-            <li
-              key={language}
-              className={`language-item ${languages.includes(language) ? 'selected' : ''}`}
-              onClick={() => toggleLanguage(language)}
-            >
-              {language}
-            </li>
-          ))}
-        </ul>
+      <div className="filter-group languages-filter">
+        <h4>Languages</h4>
+        {languages.map((language) => (
+          <div key={language} className="checkbox-container">
+            <input
+              id={`language-${language}`}
+              type="checkbox"
+              checked={languages.includes(language)}
+              onChange={() => toggleLanguage(language)}
+            />
+            <label htmlFor={`language-${language}`}>{language}</label>
+          </div>
+        ))}
         {languages.length > 0 && (
-          <button className="clear-btn" onClick={() => clearFilter('languages')}>
+          <button
+            className="clear-btn"
+            onClick={() => clearFilter("languages")}
+          >
             Clear Languages
           </button>
         )}

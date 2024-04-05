@@ -1,6 +1,6 @@
 
 export default function Navbar(){
     return(
-        <p>test</p>
+        <h1>BiblioBlend</h1>
     );
 }

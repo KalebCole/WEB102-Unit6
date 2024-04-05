@@ -1,35 +1,30 @@
-/* The switch - the box around the slider */
-.toggle-btn {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
-    border-radius: 99px;
-  }
-  
-  /* The slider */
-  .toggle-btn:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: 0.4s;
-  }
-  
-  /* The "ON" color */
-  .toggled {
-    background-color: #2196F3;
-  }
-  
-  /* Move the slider to the right when toggled */
-  .toggled:before {
-    transform: translateX(26px);
-  }
-  
-  /* The "OFF" color */
-  .toggle-btn:not(.toggled) {
-    background-color: #ccc;
-  }
+/* Filters.css */
+.container {
+  display: flex;
+  flex-wrap: wrap; /* Allows items to wrap onto multiple lines as needed */
+  gap: 20px; /* Adds some space between your filter sections */
+  justify-content: center; /* Center the items horizontally */
+  align-items: center; /* Align the items vertically */
+}
+
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.filter-group {
+  background: #f8f8f8;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+}
+
+.filter-group h4 {
+  margin-top: 0;
+}
+
+/* Add custom checkbox and star rating styles */

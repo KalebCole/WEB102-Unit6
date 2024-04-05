@@ -9,6 +9,7 @@ import StatChart from "./components/StatChart";
 import BookList from "./components/BookList";
 import { Routes, Route } from "react-router-dom";
 import BookDetails from "./components/BookDetails";
+import Fuse from 'fuse.js'; // Make sure to install fuse.js or similar library
 
 function About() {
   return <h1>About</h1>;
@@ -18,7 +19,7 @@ export default function App() {
   const [books, setBooks] = useState([]);
   const [searchString, setSearchString] = useState("lord of the rings");
   const [filters, setFilters] = useState({
-    rating: null,
+    rating: 0,
     subjects: [],
     availableOnAudio: false,
     languages: [],
@@ -28,12 +29,16 @@ export default function App() {
   useEffect(() => {
     async function fetchData() {
       // call API
+      if (searchString.length === 0) {
+        setBooks([]);
+        return;
+      }
       const urlSlug = searchString.replaceAll(" ", "+");
       // console.log(URL + "title=" + urlSlug);
       try {
         const response = await axios.get(URL + "title=" + urlSlug);
         const { docs } = response.data;
-        
+
         if (docs) {
           const newBooks = docs.slice(0, 25).map((book) => {
             const {
@@ -41,19 +46,22 @@ export default function App() {
               author_name,
               cover_i,
               edition_count,
-              availableOnAudio,
+              ebook_count_i,
+              ratings_average,
               subject,
               language,
               first_publish_year,
               title,
             } = book;
-            let audioAvailability = availableOnAudio > 0 ? true : false;
+            let audioAvailability = ebook_count_i > 0 ? true : false;
+            
             return {
               id: key,
               author: author_name,
               cover_id: cover_i,
               edition_count: edition_count,
               isAvailableOnAudio: audioAvailability,
+              rating: ratings_average,
               subjects: subject,
               languages: language,
               first_publish_year: first_publish_year,
@@ -71,17 +79,29 @@ export default function App() {
     fetchData();
   }, [searchString]);
 
+  
+  // Add a simple fuzzy match function for subjects
+  const fuzzyMatch = (bookSubjects, filterSubjects) => {
+    return (
+      filterSubjects.length === 0 ||
+      bookSubjects.some((subject) =>
+        filterSubjects.some((filterSubject) =>
+          subject.toLowerCase().startsWith(filterSubject.toLowerCase())
+        )
+      )
+    );
+  };
   const filteredBooks = useMemo(() => {
-    return books.filter((book) => {
+    return books.filter(book => {
       const matchesRating = filters.rating ? book.rating >= filters.rating : true;
-      const matchesSubjects = filters.subjects ? filters.subjects.every(subject => book.subjects.includes(subject)) : true;
+      const matchesSubjects = fuzzyMatch(book.subjects || [], filters.subjects);
       const matchesAudioAvailability = !filters.availableOnAudio || (book.isAvailableOnAudio === filters.availableOnAudio);
-      const matchesLanguages = filters.languages ? filters.languages.every(language => book.languages.includes(language)) : true;
+      const matchesLanguages = filters.languages.length === 0 || (book.languages || []).some(lang => filters.languages.includes(lang));
       return matchesRating && matchesSubjects && matchesAudioAvailability && matchesLanguages;
     });
   }, [books, filters]);
   
-
+  
   return (
     <>
       <Navbar />
@@ -101,11 +121,10 @@ export default function App() {
                 availableOnAudio={filters.availableOnAudio}
                 languages={filters.languages}
                 setFilters={setFilters}
+                books={filteredBooks}
               />
-              <StatChart books={books} />
-              {books && (
-                <BookList books={books} />
-              )}
+              <StatChart books={filteredBooks} />
+              {filteredBooks && <BookList books={filteredBooks} />}
             </>
           }
         />

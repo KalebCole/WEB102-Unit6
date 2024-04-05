@@ -1,0 +1,31 @@
+/* BookList.css */
+.book-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px; /* Adjust space between books */
+    padding: 20px;
+  }
+  
+  .book {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #f9f9f9; /* Light background for the card */
+    border: 1px solid #eaeaea; /* Light border */
+    padding: 10px;
+    border-radius: 5px; /* Optional: rounded corners */
+  }
+  
+  .book img {
+    width: 100%; /* Make image responsive */
+    height: auto;
+    border-radius: 5px; /* Optional: rounded image corners */
+  }
+  
+  /* Adjust the width of the grid items based on the screen size */
+  @media (min-width: 600px) {
+    .book-list {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+  }
+  
